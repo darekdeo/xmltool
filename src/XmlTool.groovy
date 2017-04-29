@@ -9,21 +9,21 @@ import org.w3c.dom.*
 
 class XmlTool {
 
-    def List<Item> readXml(String xml) {
+    List<Item> readXml(String xml) {
         List<Item> items = new ArrayList<>()
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance()
         try {
             DocumentBuilder db = dbf.newDocumentBuilder()
             Document dom = db.parse(xml);
 
-            NodeList nodeList1 = dom.getDocumentElement().getChildNodes()
+            NodeList nodeList = dom.getDocumentElement().getChildNodes()
 
-            for (int i = 0; i < nodeList1.length; i++) {
-                Node node = nodeList1.item(i)
+            for (int i = 0; i < nodeList.length; i++) {
+                Node node = nodeList.item(i)
                 if (node.getNodeName() == "string") {
                     Item item = new Item()
                     item.id = node.getAttributes().getNamedItem("id").getNodeValue()
-                    println item.id
+//                    println item.id
 
                     NodeList childNodes = node.getChildNodes()
                     for (int j = 0; j < childNodes.length; j++) {
@@ -37,16 +37,16 @@ class XmlTool {
                 }
             }
         } catch (ParserConfigurationException pce) {
-            System.out.println(pce.getMessage())
+            println(pce.getMessage())
         } catch (SAXException se) {
-            System.out.println(se.getMessage())
+            println(se.getMessage())
         } catch (IOException ioe) {
-            System.err.println(ioe.getMessage())
+            println(ioe.getMessage())
         }
         return items;
     }
 
-    def Document getXML(List<Item> items) {
+    Document getXML(List<Item> items) {
         Document dom = null
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -58,23 +58,23 @@ class XmlTool {
             Element rootEle = dom.createElement("string_table");
 
             // create data elements and place them under root
-            for (Item item : items) {
+            items.each {
                 Element stringElem = dom.createElement("string")
-                stringElem.setAttribute("id", item.id)
+                stringElem.setAttribute("id", it.id)
 
                 Element textElem = dom.createElement("text")
-                textElem.appendChild(dom.createTextNode(item.text));
+                textElem.appendChild(dom.createTextNode(it.text));
                 stringElem.appendChild(textElem)
                 rootEle.appendChild(stringElem);
             }
             dom.appendChild(rootEle);
         } catch (ParserConfigurationException pce) {
-            System.out.println("Error trying to instantiate DocumentBuilder " + pce);
+            println("Error trying to instantiate DocumentBuilder " + pce);
         }
         return dom
     }
 
-    def writeXml(String xmlPath, Document dom) {
+    void writeXml(String xmlPath, Document dom) {
         try {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
             tr.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -87,9 +87,9 @@ class XmlTool {
                     new StreamResult(new FileOutputStream(xmlPath)));
 
         } catch (TransformerException te) {
-            System.out.println(te.getMessage());
+            println(te.getMessage());
         } catch (IOException ioe) {
-            System.out.println(ioe.getMessage());
+            println(ioe.getMessage());
         }
     }
 }

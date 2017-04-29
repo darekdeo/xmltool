@@ -12,13 +12,14 @@ class Main {
             List<Item> items1 = xmlTool.readXml(xml1Path)
             List<Item> items2 = xmlTool.readXml(xml2Path)
 
-            for (Item item : items1) {
-                if (!items2.contains(item)) {
-                    items2.add(item);
+            items2.each {
+                if (!items1.contains(it)) {
+                    items1.add(it);
+                    println it.id;
                 }
             }
 
-            Document document = xmlTool.getXML(items2)
+            Document document = xmlTool.getXML(items1)
             xmlTool.writeXml("./merged_output.xml", document)
         } catch (IndexOutOfBoundsException e) {
             e.println("Missing param for one of source xml files.")
